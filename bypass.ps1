@@ -112,8 +112,8 @@ try {
 }
 
   Start-Sleep -Milliseconds 103
-  \$null = [Environment]::ProcessorCount
-  \$null = [System.Diagnostics.Process]::GetCurrentProcess().Id
+  $null = [Environment]::ProcessorCount
+  $null = [System.Diagnostics.Process]::GetCurrentProcess().Id
 }
 finally {
   Remove-Item Env:\Aqv027DF -ErrorAction SilentlyContinue
